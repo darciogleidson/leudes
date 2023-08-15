@@ -23,7 +23,7 @@ def selecionar_arquivo():
     arquivo = filedialog.askopenfilename(initialdir="/", title="Selecione o arquivo", filetypes=(("Excel", "*.xlsx"), ("Todos os arquivos", "*.*")))
     try:
         df = pd.read_excel(arquivo)
-        if "matricula" in df.columns or "Matricula" in df.columns or "MATRICULA" in df.columns or "valor" in df.columns or "Valor" in df.columns or "VALOR" in df.columns:
+        if "matricula" in df.columns or "valor" in df.columns:
             pass
         else:
             messagebox.showinfo(title="Erro", message="Arquivo não possui as colunas matricula ou valor!")
@@ -31,12 +31,25 @@ def selecionar_arquivo():
         messagebox.showinfo(title="Erro", message="Erro ao selecionar o arquivo!")
 
 #Criando a função para gerar o arquivo txt
+#O arquivo txt deve ter o nome do arquivo excel + .txt
+#Agrupar os valores por matricula e somar os valores
+#não é necessário gravar no txt o cabeçalho das colunas
+#tratar os valores da coluna matricula como string
+#tratar os valores da coluna valor como float
+#detalhar melhor o erro caso ocorra exception
+#no txt deve ter o seguinte formato: matricula|valor
 def gerar_arquivo():
     try:
         df = pd.read_excel(arquivo)
-        df.to_csv(arquivo + ".txt", sep="\t", index=False)
+        df = df.groupby("matricula")["valor"].sum()
+        #completar o código da matricula com zeros a esquerda até completar 10 caracteres
+        df.index = df.index.map(lambda x: str(x).zfill(10))
+        #completar o valor com zeros a esquerda até completar 10 caracteres
+        df = df.map(lambda x: str(x).zfill(10))
+        df.to_csv(arquivo + ".txt", sep="|", header=False)
         messagebox.showinfo(title="Sucesso", message="Arquivo gerado com sucesso!")
-    except:
+    except Exception as e:
+        print(e)
         messagebox.showinfo(title="Erro", message="Erro ao gerar o arquivo!")
 
 #Criando os componentes

@@ -1,4 +1,0 @@
-Matricula	Valor
-111-x	45
-12-x	40
-111-x	35
