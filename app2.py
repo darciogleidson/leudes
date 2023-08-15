@@ -17,10 +17,18 @@ tela.configure(background="white")
 tela.resizable(width=False, height=False)
 
 #Criando a função para selecionar o arquivo excel
+#Se no arquivo excel não possuir a coluna matricula ou valor, independente de maiuscula, minuscula ou acento, exibir uma mensagem de erro
 def selecionar_arquivo():
     global arquivo
-    arquivo = filedialog.askopenfilename(initialdir="/", title="Selecione o Arquivo", filetypes=(("Arquivos Excel", "*.xlsx"), ("Todos os Arquivos", "*.*")))
-    lbl_arquivo["text"] = arquivo
+    arquivo = filedialog.askopenfilename(initialdir="/", title="Selecione o arquivo", filetypes=(("Excel", "*.xlsx"), ("Todos os arquivos", "*.*")))
+    try:
+        df = pd.read_excel(arquivo)
+        if "matricula" in df.columns or "Matricula" in df.columns or "MATRICULA" in df.columns or "valor" in df.columns or "Valor" in df.columns or "VALOR" in df.columns:
+            pass
+        else:
+            messagebox.showinfo(title="Erro", message="Arquivo não possui as colunas matricula ou valor!")
+    except:
+        messagebox.showinfo(title="Erro", message="Erro ao selecionar o arquivo!")
 
 #Criando a função para gerar o arquivo txt
 def gerar_arquivo():
@@ -43,6 +51,14 @@ btn_selecionar.place(x=200, y=120)
 
 btn_gerar = Button(tela, text="Gerar Arquivo", background="white", foreground="black", font=("Arial", 12, "bold"), command=gerar_arquivo)
 btn_gerar.place(x=190, y=160)
+
+#Iniciando a tela sempre no meio da tela
+tela.update_idletasks()
+largura = tela.winfo_width()
+altura = tela.winfo_height()
+posx = (tela.winfo_screenwidth() // 2) - (largura // 2)
+posy = (tela.winfo_screenheight() // 2) - (altura // 2)
+tela.geometry('{}x{}+{}+{}'.format(largura, altura, posx, posy))
 
 #Iniciando a tela
 tela.mainloop()
